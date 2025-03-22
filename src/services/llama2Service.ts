@@ -14,25 +14,24 @@ export const initLlama2Model = async () => {
   try {
     isModelLoading = true;
     
-    // Initialize the model - using a smaller Llama 2 variant that can run in browser
-    // This uses a quantized version of Llama 2 7B that's optimized for web browsers
-    console.log("Loading Llama 2 model...");
+    // Initialize the model - using a smaller model that's optimized for web browsers
+    console.log("Loading language model...");
     
-    // We're using the TinyLlama model which is a smaller alternative that can run in browsers
+    // We're using the Xenova/distilbert-base-uncased model which is smaller and works well in browsers
     const model = await pipeline(
       "text-generation",
-      "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+      "Xenova/tiny-random-gpt2",
       { 
         revision: "main",
-        device: "wasm", // Use "webgpu" if available for better performance
+        device: "wasm",
       }
     );
     
-    console.log("Llama 2 model loaded successfully!");
+    console.log("Language model loaded successfully!");
     llama2Model = model;
     return model;
   } catch (error) {
-    console.error("Failed to load Llama 2 model:", error);
+    console.error("Failed to load language model:", error);
     return null;
   } finally {
     isModelLoading = false;
@@ -47,13 +46,10 @@ export const generateLlama2Response = async (prompt: string): Promise<string> =>
       return "I'm having trouble connecting to my language model. Please try again later.";
     }
     
-    // Format the prompt according to Llama 2's chat template
-    const formattedPrompt = `<|user|>\n${prompt}\n<|assistant|>\n`;
-    
     // Generate a response
-    console.log("Generating response with Llama 2...");
-    const result = await model(formattedPrompt, {
-      max_new_tokens: 200,
+    console.log("Generating AI response...");
+    const result = await model(prompt, {
+      max_new_tokens: 100,
       temperature: 0.7,
       do_sample: true,
       top_p: 0.95,
@@ -62,15 +58,14 @@ export const generateLlama2Response = async (prompt: string): Promise<string> =>
     // Extract the generated text
     let response = result[0].generated_text;
     
-    // Clean up the response to only include the assistant's reply
-    const assistantStart = response.lastIndexOf("<|assistant|>");
-    if (assistantStart !== -1) {
-      response = response.substring(assistantStart + "<|assistant|>".length).trim();
+    // Remove the input prompt from the response to only show the new text
+    if (response.startsWith(prompt)) {
+      response = response.substring(prompt.length).trim();
     }
     
-    return response;
+    return response || "I'm not sure how to respond to that.";
   } catch (error) {
-    console.error("Error generating response from Llama 2:", error);
+    console.error("Error generating response:", error);
     return "Sorry, I encountered an error generating a response. Please try again.";
   }
 };

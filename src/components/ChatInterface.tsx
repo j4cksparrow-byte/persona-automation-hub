@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Card from './ui-custom/Card';
 import Button from './ui-custom/Button';
 import { generateLlama2Response, initLlama2Model, isLlama2ModelLoaded } from '../services/llama2Service';
+import { useToast } from "@/components/ui/use-toast";
 
 type Message = {
   id: string;
@@ -16,7 +17,7 @@ const ChatInterface = () => {
     {
       id: '1',
       sender: 'ai',
-      text: "Hello! I'm Nova, your AI assistant powered by Llama 2. How can I help you today?",
+      text: "Hello! I'm Nova, your AI assistant powered by a lightweight GPT model. How can I help you today?",
       timestamp: new Date(Date.now() - 120000),
     },
   ]);
@@ -25,6 +26,7 @@ const ChatInterface = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [modelStatus, setModelStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   // Initialize the model on component mount
   useEffect(() => {
@@ -33,14 +35,25 @@ const ChatInterface = () => {
         setModelStatus('loading');
         await initLlama2Model();
         setModelStatus('ready');
+        toast({
+          title: "AI Model Ready",
+          description: "The language model has been loaded successfully.",
+          duration: 3000,
+        });
       } catch (error) {
         console.error("Failed to load model:", error);
         setModelStatus('error');
+        toast({
+          title: "Model Loading Failed",
+          description: "There was an issue loading the AI model. Chat functionality may be limited.",
+          variant: "destructive",
+          duration: 5000,
+        });
       }
     };
     
     loadModel();
-  }, []);
+  }, [toast]);
 
   // Scroll to bottom of messages
   useEffect(() => {
@@ -63,7 +76,7 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      // Generate response using Llama 2
+      // Generate response
       const aiResponse = await generateLlama2Response(inputValue);
       
       // Add AI response
@@ -87,6 +100,13 @@ const ChatInterface = () => {
       };
       
       setMessages((prev) => [...prev, errorMessage]);
+      
+      toast({
+        title: "Response Generation Failed",
+        description: "There was an issue generating a response. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -102,16 +122,16 @@ const ChatInterface = () => {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="heading-2 mb-6">Experience Your AI Assistant</h2>
           <p className="text-lg text-muted-foreground">
-            Preview how your AI assistant will interact with users. This demo uses Meta's Llama 2 model running directly in your browser.
+            Preview how your AI assistant will interact with users. This demo uses a lightweight GPT model running directly in your browser.
           </p>
           {modelStatus === 'loading' && (
             <div className="mt-4 p-2 bg-blue-100 text-blue-800 rounded-md">
-              Loading Llama 2 model... This may take a moment.
+              Loading language model... This may take a moment.
             </div>
           )}
           {modelStatus === 'error' && (
             <div className="mt-4 p-2 bg-red-100 text-red-800 rounded-md">
-              Failed to load Llama 2 model. Please try refreshing the page.
+              Failed to load language model. Please try refreshing the page.
             </div>
           )}
         </div>
@@ -126,7 +146,7 @@ const ChatInterface = () => {
                 <div>
                   <h3 className="font-medium">Nova</h3>
                   <span className="text-xs text-muted-foreground">
-                    Powered by Meta Llama 2
+                    AI Assistant
                     {isLlama2ModelLoaded() ? (
                       <span className="ml-1 text-green-500">●</span>
                     ) : (
@@ -203,7 +223,7 @@ const ChatInterface = () => {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                  placeholder={isLlama2ModelLoaded() ? "Type your message..." : "Loading Llama 2 model..."}
+                  placeholder={isLlama2ModelLoaded() ? "Type your message..." : "Loading language model..."}
                   className="flex-1 bg-muted/50 border border-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/10"
                   disabled={!isLlama2ModelLoaded() || isLoading}
                 />
