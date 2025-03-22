@@ -23,9 +23,8 @@ export const initLlama2Model = async () => {
       "text-generation",
       "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
       { 
-        quantized: true,
         revision: "main",
-        device: "cpu", // Use "webgpu" if available for better performance
+        device: "wasm", // Use "webgpu" if available for better performance
       }
     );
     
