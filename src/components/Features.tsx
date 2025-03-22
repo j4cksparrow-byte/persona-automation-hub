@@ -27,7 +27,7 @@ const Features = () => {
     },
     {
       title: 'Customizable Voices',
-      description: 'Select from a library of voices or customize your own to match your AI assistant's character.',
+      description: "Select from a library of voices or customize your own to match your AI assistant's character.",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>

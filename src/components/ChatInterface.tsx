@@ -15,7 +15,7 @@ const ChatInterface = () => {
     {
       id: '1',
       sender: 'ai',
-      text: 'Hello! I'm Nova, your AI assistant. How can I help you today?',
+      text: "Hello! I'm Nova, your AI assistant. How can I help you today?",
       timestamp: new Date(Date.now() - 120000),
     },
     {
@@ -27,7 +27,7 @@ const ChatInterface = () => {
     {
       id: '3',
       sender: 'ai',
-      text: 'I've scheduled a team meeting for tomorrow at 2:00 PM. I've sent calendar invites to all team members. Would you like me to prepare an agenda as well?',
+      text: "I've scheduled a team meeting for tomorrow at 2:00 PM. I've sent calendar invites to all team members. Would you like me to prepare an agenda as well?",
       timestamp: new Date(Date.now() - 30000),
     },
   ]);
